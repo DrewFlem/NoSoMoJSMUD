@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Andrew</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script>
+        var host = "http://localhost";
+        var socket = io.connect(host);
+
+        $(function(){
+            // when the client clicks SEND
+            $('#datasend').click( function() {
+                var command = $('#data').val();
+                $('#data').val('');
+
+                socket.emit('sendCommand', command);
+            });
+
+            // when the client hits ENTER on their keyboard
+            $('#data').keypress(function(e) {
+                if(e.which == 13) {
+                    $(this).blur();
+                    $('#datasend').focus().click();
+                }
+            });
+        });
+
+        socket.on('newMessage', function (message) {
+            $('#messageLog').append('<b>' + message);
+        });
+    </script>
+</head>
+<body>
+    <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
+        <div id="messageLog"></div>
+        <input id="data" style="width:200px;" />
+        <input type="button" id="datasend" value="send" />
+    </div>
+</body>
+</html>
+
+
+<!-- /*socket.on('connect', function () {
+// call the server-side function 'adduser' and send one parameter (value of prompt)
+socket.emit('adduser', prompt("What's your name?"));
+});*/
+
+/*socket.on('updaterooms', function(rooms, current_room) {
+$('#rooms').empty();
+$.each(rooms, function(key, value) {
+if(value == current_room){
+$('#rooms').append('<div>' + value + '</div>');
+}
+else {
+$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+}
+});
+});*/
+/*function switchRoom(room){
+socket.emit('switchRoom', room);
+};*/
+
+
+/*socket.on('connecting', function () {
+console.log("onConnecting");
+});
+socket.on('disconnect', function () {
+console.log("onDisconnect");
+});
+socket.on('connect_failed', function () {
+console.log("onConnect_failed");
+});
+socket.on('error', function () {
+console.log("onError");
+});
+socket.on('message', function (message, callback) {
+console.log("onMessage");
+console.log(message);
+});
+socket.on('evtFromServer', function (data, callback) {
+console.log("onFromServer");
+console.log(data);
+});
+socket.on('reconnect_failed', function () {
+console.log("onReconnect_failed");
+});
+socket.on('reconnect', function () {
+console.log("onReconnect");
+});
+socket.on('reconnecting', function () {
+console.log("onReconnecting");
+});
+var testObj = {name: "Andrew", lastName: "Fleming"};
+
+socket.emit('evtFromClient', "test", "yo", testObj);*/ -->
