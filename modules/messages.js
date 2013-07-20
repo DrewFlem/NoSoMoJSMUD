@@ -14,4 +14,4 @@ exports.start = function (socket) {
 
 exports.general = function (socket, message) {
     socket.emit('newMessage', message);
-}
+};

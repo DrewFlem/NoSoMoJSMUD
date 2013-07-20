@@ -15,6 +15,11 @@ var              app = require('http').createServer(handler)
 
 app.listen(8888);
 
+/**
+ * Initialization of Server ...and stuff
+ * @param req
+ * @param res
+ */
 function handler (req, res) {
     fs.readFile(__dirname + '/index.html',
         function (err, data) {
@@ -28,6 +33,8 @@ function handler (req, res) {
         });
 }
 
+// Listens for connections from players, does initial connection functions, and sets
+//   up our listeners
 io.sockets.on('connection', function (socket) {
     playerManager.add(socket.id);
     message.start(socket);

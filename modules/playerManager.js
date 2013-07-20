@@ -15,7 +15,6 @@ var players = {};
  * Add a Guest user to current player pool
  *
  * @param sessionId
- * @param userName
  * @returns {}
  */
 exports.add = function (sessionId) {
@@ -59,7 +58,7 @@ exports.remove = function (sessionId) {
  */
 exports.getUser = function (sessionId) {
     return players[sessionId];
-}
+};
 
 /**
  * Get All players (sessionId & userName)

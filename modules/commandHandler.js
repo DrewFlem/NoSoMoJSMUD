@@ -9,14 +9,19 @@
 var messages = require('./messages');
 
 var commands = {
-    "look": require('./commands/look'),
-    "help": require('./commands/help')
-}
+     "look": require('./commands/look'),
+     "help": require('./commands/help'),
+    "score": require('./commands/score'),
+    "north": require('./commands/north'),
+    "south": require('./commands/south'),
+     "east": require('./commands/east'),
+     "west": require('./commands/west')
+};
 
 var expecting = {};
 
 /**
- * This function handles interpretting the user command and sending them to appropriate command module
+ * This function handles interpreting the user command and sending them to appropriate command module
  * @param socket
  * @param command
  */
@@ -72,8 +77,9 @@ exports.expect = function (socket, expected) {
             break;
         case "":
             expecting[socket.id] = undefined;
+            break;
         default:
 
             break;
     }
-}
+};
