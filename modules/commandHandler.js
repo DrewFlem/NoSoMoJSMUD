@@ -14,7 +14,7 @@ var expecting = {};
 function interpret(socket, command) {
     if (command == "look") {
         messages.general(socket, "<br>You see here a void, nothing but the beautiful recessed of your mind.");
-bo    }
+    }
 }
 
 /**
