@@ -8,13 +8,21 @@
 
 var messages = require('./messages');
 
+var commands = {
+    "look": require('./commands/look'),
+    "help": require('./commands/help')
+}
 
 var expecting = {};
 
+/**
+ * This function handles interpretting the user command and sending them to appropriate command module
+ * @param socket
+ * @param command
+ */
 function interpret(socket, command) {
-    if (command == "look") {
-        messages.general(socket, "<br>You see here a void, nothing but the beautiful recessed of your mind.");
-    }
+    var com = commands[command];
+    com.run(socket);
 }
 
 /**
