@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="file://$PROJECT_DIR$/modules/commandHandler.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/commands/east.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/commands/help.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/commands/look.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/commands/north.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/commands/score.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/commands/south.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/commands/west.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
-    <file url="file://$PROJECT_DIR$/modules/playerManager.js" libraries="{Node.js Globals, Node.js v0.10.13 Core Modules}" />
+    <file url="file://$PROJECT_DIR$/modules/commandHandler.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/commands/east.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/commands/help.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/commands/look.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/commands/north.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/commands/score.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/commands/south.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/commands/west.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/modules/playerManager.js" libraries="{Node.js Globals}" />
+    <file url="file://$PROJECT_DIR$/server.js" libraries="{Node.js Globals, jQuery-2.0.0}" />
+    <file url="PROJECT" libraries="{Node.js v0.10.12 Core Modules}" />
   </component>
 </project>
 

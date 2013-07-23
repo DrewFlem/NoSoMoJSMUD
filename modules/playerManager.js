@@ -18,6 +18,7 @@ var players = {};
  * @returns {}
  */
 exports.add = function (sessionId) {
+    console.log("add: ", sessionId);
     players[sessionId] = "Guest_" + sessionId;
 };
 
@@ -29,8 +30,8 @@ exports.add = function (sessionId) {
  * @returns {}
  */
 exports.update = function (sessionId, userName) {
-    if (this.players[sessionId]) {
-        this.players[sessionId] = userName;
+    if (_.contains(players, "Guest_" + sessionId)) {
+        players[sessionId] = userName;
     }
 };
 

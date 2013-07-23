@@ -6,7 +6,8 @@
  * Time: 4:46 PM
  */
 
-var messages = require('./messages');
+var messages = require('./messages'),
+        pMan = require('./playerManager');
 
 var commands = {
      "look": require('./commands/look'),
@@ -15,9 +16,9 @@ var commands = {
     "north": require('./commands/north'),
     "south": require('./commands/south'),
      "east": require('./commands/east'),
-     "west": require('./commands/west')
+     "west": require('./commands/west'),
+      "who": require('./commands/who')
 };
-
 var expecting = {};
 
 /**
@@ -26,8 +27,12 @@ var expecting = {};
  * @param command
  */
 function interpret(socket, command) {
-    var com = commands[command];
-    com.run(socket);
+    if (commands[command]) {
+        commands[command].run(socket);
+    } else {
+        messages.general(socket, "<br>I don't understand!");
+        // TODO: implement searching algorithm
+    }
 }
 
 /**
@@ -41,7 +46,8 @@ function interpret(socket, command) {
 function handleExpected(socket, command) {
     if (expecting[socket.id] == "username") {
         messages.general(socket, "<br>Welcome my friend " + command + ". I've been expecting you.");
-        exports.expect(socket, '');
+        exports.expect(socket);
+        pMan.update(socket.id, command);
     }
 }
 
@@ -53,9 +59,7 @@ function handleExpected(socket, command) {
  * @param command
  */
 exports.sent = function (socket, command) {
-    console.log( command);
     if (expecting[socket.id]) {
-        console.log( "3. " + command);
         handleExpected(socket, command);
     } else {
         interpret(socket, command);
@@ -70,16 +74,9 @@ exports.sent = function (socket, command) {
  * @param expected
  */
 exports.expect = function (socket, expected) {
-    console.log("expect: " + expected);
-    switch (expected) {
-        case "username":
-            expecting[socket.id] = 'username';
-            break;
-        case "":
-            expecting[socket.id] = undefined;
-            break;
-        default:
-
-            break;
+    if (expected) {
+        expecting[socket.id] = expected;
+    } else {
+        expecting[socket.id] = undefined;
     }
 };

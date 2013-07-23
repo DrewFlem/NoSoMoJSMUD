@@ -7,7 +7,6 @@
  */
 
 exports.start = function (socket) {
-    console.log('Send the message');
     var message = "Hello! Welcome to my game! <br> Please give me your username.";
     socket.emit('newMessage', message);
 };

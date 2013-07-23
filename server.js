@@ -11,7 +11,7 @@ var              app = require('http').createServer(handler)
     ,             fs = require('fs')
     ,  playerManager = require('./modules/playerManager')
     ,        message = require('./modules/messages')
-    , commandHandler = require ('./modules/commandHandler');
+    , commandHandler = require('./modules/commandHandler');
 
 app.listen(8888);
 
@@ -41,7 +41,6 @@ io.sockets.on('connection', function (socket) {
     commandHandler.expect(socket, 'username');
 
     socket.on('sendCommand', function (command) {
-        console.log( "1. " + command);
         commandHandler.sent(socket, command);
     });
 
