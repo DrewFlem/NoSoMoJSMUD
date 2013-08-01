@@ -7,6 +7,7 @@
  */
 
 var              app = require('http').createServer(handler)
+    ,       mongoose = require('mongoose')
     ,             io = require('socket.io').listen(app)
     ,             fs = require('fs')
     ,  playerManager = require('./modules/playerManager')
