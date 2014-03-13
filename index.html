@@ -13,7 +13,6 @@
             $('#datasend').click( function() {
                 var command = $('#data').val();
                 $('#data').val('');
-
                 socket.emit('sendCommand', command);
             });
 
@@ -21,13 +20,14 @@
             $('#data').keypress(function(e) {
                 if(e.which == 13) {
                     $(this).blur();
-                    $('#datasend').focus().click();
+                    $('#datasend').click();
                 }
             });
         });
 
         socket.on('newMessage', function (message) {
             $('#messageLog').append('<b>' + message);
+            $('#data').focus();
         });
     </script>
 </head>

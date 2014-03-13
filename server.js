@@ -7,7 +7,6 @@
  */
 
 var              app = require('http').createServer(handler)
-    ,       mongoose = require('mongoose')
     ,             io = require('socket.io').listen(app)
     ,             fs = require('fs')
     ,  playerManager = require('./modules/playerManager')
@@ -34,8 +33,7 @@ function handler (req, res) {
         });
 }
 
-// Listens for connections from players, does initial connection functions, and sets
-//   up our listeners
+// Listens for connections from players, does initial connection functions, and sets up our listeners
 io.sockets.on('connection', function (socket) {
     playerManager.add(socket.id);
     message.start(socket);
