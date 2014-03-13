@@ -9,5 +9,5 @@
 var messages = require('../messages');
 
 exports.run = function (socket) {
-    messages.general(socket, "<br>You need help? That's what I'm here for!");
+    messages.general(socket, "You need help? That's what I'm here for!");
 };

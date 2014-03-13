@@ -79,7 +79,7 @@ function interpret(socket, command) {
     if (commands[command]) {
         commands[command].run(socket);
     } else {
-        messages.general(socket, "<br>I don't understand!");
+        messages.general(socket, "I don't understand!");
         // TODO: implement searching algorithm
     }
 }
@@ -94,7 +94,7 @@ function interpret(socket, command) {
  */
 function handleExpected(socket, command) {
     if (expecting[socket.id] == "username") {
-        messages.general(socket, "<br>Welcome my friend " + command + ". I've been expecting you.");
+        messages.general(socket, "Welcome my friend " + command + ". I've been expecting you.");
         exports.expect(socket);
         pMan.update(socket.id, command);
     }
