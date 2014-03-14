@@ -8,5 +8,5 @@
 var messages = require('../messages');
 
 exports.run = function (socket) {
-    messages.general(socket, "You see here a void, nothing but the beautiful recessed of your mind.");
+    messages.generic(socket, "You see here a void, nothing but the beautiful recessed of your mind.");
 };

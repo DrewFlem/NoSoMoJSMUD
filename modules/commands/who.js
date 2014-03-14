@@ -17,5 +17,5 @@ exports.run = function (socket) {
         playerList += "<br>";
     });
 
-    messages.general(socket, "Players currently online...<br>" + playerList);
+    messages.generic(socket, "Players currently online...<br>" + playerList);
 };

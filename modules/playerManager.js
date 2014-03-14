@@ -22,6 +22,10 @@ exports.add = function (sessionId) {
     players[sessionId] = "Guest_" + sessionId;
 };
 
+exports.isUserLoggedIn = function(sessionID) {
+    return _.contains(players, sessionID);
+}
+
 /**
  * Update a user currently in the player pool
  *

@@ -6,12 +6,13 @@
  * Time: 11:15 AM
  */
 
-var              app = require('http').createServer(handler)
-    ,             io = require('socket.io').listen(app)
-    ,             fs = require('fs')
-    ,  playerManager = require('./modules/playerManager')
-    ,        message = require('./modules/messages')
-    , commandHandler = require('./modules/commandHandler');
+var app = require('http').createServer(handler),
+    io = require('socket.io').listen(app),
+    fs = require('fs'),
+    playerManager = require('./modules/playerManager'),
+    message = require('./modules/messages'),
+    commandHandler = require('./modules/commandHandler'),
+    login = require('./modules/login');
 
 app.listen(8888);
 
@@ -35,9 +36,11 @@ function handler (req, res) {
 
 // Listens for connections from players, does initial connection functions, and sets up our listeners
 io.sockets.on('connection', function (socket) {
-    playerManager.add(socket.id);
-    message.start(socket);
-    commandHandler.expect(socket, 'username');
+    if (!playerManager.isUserLoggedIn(socket)) {
+        login.start(socket);
+    } else {
+        message.generic(socket, "Welcome back!");
+    }
 
     socket.on('sendCommand', function (command) {
         commandHandler.sent(socket, command);

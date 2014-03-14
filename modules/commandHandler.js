@@ -7,7 +7,9 @@
  */
 
 var messages = require('./messages'),
-        pMan = require('./playerManager');
+    playerManager = require('./playerManager'),
+    database = require('./database'),
+    expected = require('./expected');
 
 var commands = {
      "look": require('./commands/look'),
@@ -30,24 +32,8 @@ function interpret(socket, command) {
     if (commands[command]) {
         commands[command].run(socket);
     } else {
-        messages.general(socket, "I don't understand!");
+        messages.generic(socket, "I don't understand!");
         // TODO: implement searching algorithm
-    }
-}
-
-/**
- * Determines what to do with a command if the program is waiting for a response from the player
- *
- *
- * @param socket
- * @param command
- *      username - waiting for user to input their username
- */
-function handleExpected(socket, command) {
-    if (expecting[socket.id] == "username") {
-        messages.general(socket, "Welcome my friend " + command + ". I've been expecting you.");
-        exports.expect(socket);
-        pMan.update(socket.id, command);
     }
 }
 
@@ -59,24 +45,9 @@ function handleExpected(socket, command) {
  * @param command
  */
 exports.sent = function (socket, command) {
-    if (expecting[socket.id]) {
-        handleExpected(socket, command);
+    if (expected.isExpecting(socket)) {
+        expected.doExpected(socket, command);
     } else {
         interpret(socket, command);
-    }
-};
-
-/**
- * Sets up a new expected case for a certain socket/user. The next input from the user should be
- * something pertaining to the expected.
- *
- * @param socket
- * @param expected
- */
-exports.expect = function (socket, expected) {
-    if (expected) {
-        expecting[socket.id] = expected;
-    } else {
-        expecting[socket.id] = undefined;
     }
 };

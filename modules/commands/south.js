@@ -8,5 +8,5 @@
 var messages = require('../messages');
 
 exports.run = function (socket) {
-    messages.general(socket, "South");
+    messages.generic(socket, "South");
 };

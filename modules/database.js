@@ -7,9 +7,36 @@
  */
 
 var messages = require('./messages'),
-    pMan = require('./playerManager');
+    pMan = require('./playerManager'),
+    mongojs = require('mongojs');
 
+var connections = {};
 
+exports.newConnection = function (id) {
+    var databaseUrl = "db";
+    var collections = ["users"];
+    connections.id = mongojs.connect(databaseUrl, collections);
+};
+
+exports.addNewPlayer = function (id, username, password) {
+    console.log("ADD NEW PLAYER TO DATABASE!!!");
+};
+
+exports.deletePlayer = function (id, username) {
+
+};
+
+exports.checkPlayer = function(id, username) {
+    connections.id.users.find({name:username}, function(err, users) {
+        return !(err || !users.length);
+    });
+};
+
+exports.checkPassword = function(id, username, password) {
+
+};
+
+/*
 var dbAddress = 'mongodb://localhost/test';
 mongoose.connect(dbAddress);
 var db = mongoose.connection;
@@ -63,69 +90,4 @@ db.once('open', function callback () {
         foundAndrew = results;
         console.log("hmm " + foundAndrew.name);
     })
-});
-
-
-
-
-
-
-/**
- * This function handles interpreting the user command and sending them to appropriate command module
- * @param socket
- * @param command
- */
-function interpret(socket, command) {
-    if (commands[command]) {
-        commands[command].run(socket);
-    } else {
-        messages.general(socket, "I don't understand!");
-        // TODO: implement searching algorithm
-    }
-}
-
-/**
- * Determines what to do with a command if the program is waiting for a response from the player
- *
- *
- * @param socket
- * @param command
- *      username - waiting for user to input their username
- */
-function handleExpected(socket, command) {
-    if (expecting[socket.id] == "username") {
-        messages.general(socket, "Welcome my friend " + command + ". I've been expecting you.");
-        exports.expect(socket);
-        pMan.update(socket.id, command);
-    }
-}
-
-/**
- * Handles what to do first with a user command - whether the program is expecting a certain type
- * of input or if its a new command
- *
- * @param socket
- * @param command
- */
-exports.sent = function (socket, command) {
-    if (expecting[socket.id]) {
-        handleExpected(socket, command);
-    } else {
-        interpret(socket, command);
-    }
-};
-
-/**
- * Sets up a new expected case for a certain socket/user. The next input from the user should be
- * something pertaining to the expected.
- *
- * @param socket
- * @param expected
- */
-exports.expect = function (socket, expected) {
-    if (expected) {
-        expecting[socket.id] = expected;
-    } else {
-        expecting[socket.id] = undefined;
-    }
-};
+});*/
