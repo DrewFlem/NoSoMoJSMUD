@@ -9,14 +9,17 @@
         var socket = io.connect(host);
 
         $(function(){
-            // when the client clicks SEND
+            // When the client clicks send button
             $('#datasend').click( function() {
+                // Save entered commands
                 var command = $('#data').val();
+                // Clear input field
                 $('#data').val('');
+                // start sendCommand with user's input
                 socket.emit('sendCommand', command);
             });
 
-            // when the client hits ENTER on their keyboard
+            // when the client hits ENTER on their keyboard, "click" the send button
             $('#data').keypress(function(e) {
                 if(e.which == 13) {
                     $(this).blur();
@@ -25,6 +28,7 @@
             });
         });
 
+        // when the newMessage command is fired, add to the client log and focus on the input box
         socket.on('newMessage', function (message) {
             $('#messageLog').append('<b>' + message);
             $('#data').focus();

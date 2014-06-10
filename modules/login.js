@@ -1,5 +1,7 @@
 /**
- * Created by NAF2239 on 3/14/14.
+ * Handles all login work.
+ *
+ * Created by Andrew Fleming (drewflem) on 3/14/14.
  */
 
 var database = require('./database'),

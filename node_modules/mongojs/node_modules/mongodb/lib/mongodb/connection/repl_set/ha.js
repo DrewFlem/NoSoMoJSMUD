@@ -55,12 +55,12 @@ HighAvailabilityProcess.prototype.start = function() {
         socketTimeoutMS: socketTimeoutMS,
         keepAlive: 100
       }
-    , ssl: this.options.ssl
-    , sslValidate: this.options.sslValidate
-    , sslCA: this.options.sslCA
-    , sslCert: this.options.sslCert
-    , sslKey: this.options.sslKey
-    , sslPass: this.options.sslPass
+    , ssl: self.replset.options.ssl
+    , sslValidate: self.replset.options.sslValidate
+    , sslCA: self.replset.options.sslCA
+    , sslCert: self.replset.options.sslCert
+    , sslKey: self.replset.options.sslKey
+    , sslPass: self.replset.options.sslPass
   });
 
   // Create new dummy db for app
@@ -74,6 +74,9 @@ HighAvailabilityProcess.prototype.start = function() {
 
   // Let's attempt a connection over here
   newServer.connect(self.db, function(err, result, _server) {
+    // Emit ha_connect
+    self.replset.emit("ha_connect", err, result, _server);
+
     if(self.state == HighAvailabilityProcess.STOPPED) {
       _server.close();
     }
@@ -124,6 +127,10 @@ var _timeoutHandle = function(self) {
       self.db._executeQueryCommand(DbCommand.createIsMasterCommand(self.db), 
           {failFast:true, connection: self.server.checkoutReader()}
         , function(err, res) {
+          // Emit ha event
+          self.replset.emit("ha_ismaster", err, res);
+
+          // If we have an error close
           if(err) {
             self.server.close();
             return setTimeout(_timeoutHandle(self), self.options.haInterval);
@@ -177,6 +184,11 @@ var _timeoutHandle = function(self) {
                 state.master.isMasterDoc.secondary = false;                
               }
 
+              // If we have any buffered commands let's signal reconnect event
+              if(self.replset._commandsStore.count() > 0) {
+                self.replset.emit('reconnect');
+              }
+
               // Execute any waiting commands (queries or writes)
               self.replset._commandsStore.execute_queries();
               self.replset._commandsStore.execute_writes();   
@@ -209,7 +221,7 @@ var _reconnect_servers = function(self, reconnect_servers) {
 
   // Unpack connection options
   var connectTimeoutMS = self.options.connectTimeoutMS || 10000;
-  var socketTimeoutMS = self.options.socketTimeoutMS || 30000;
+  var socketTimeoutMS = self.options.socketTimeoutMS || 0;
 
   // Server class
   var Db = require('../../db').Db
@@ -229,12 +241,12 @@ var _reconnect_servers = function(self, reconnect_servers) {
         connectTimeoutMS: connectTimeoutMS,
         socketTimeoutMS: socketTimeoutMS
       }
-    , ssl: self.options.ssl
-    , sslValidate: self.options.sslValidate
-    , sslCA: self.options.sslCA
-    , sslCert: self.options.sslCert
-    , sslKey: self.options.sslKey
-    , sslPass: self.options.sslPass
+    , ssl: self.replset.options.ssl
+    , sslValidate: self.replset.options.sslValidate
+    , sslCA: self.replset.options.sslCA
+    , sslCert: self.replset.options.sslCert
+    , sslKey: self.replset.options.sslKey
+    , sslPass: self.replset.options.sslPass
   });
 
   // Create new dummy db for app
@@ -254,6 +266,9 @@ var _reconnect_servers = function(self, reconnect_servers) {
 
   // Let's attempt a connection over here
   newServer.connect(db, function(err, result, _server) {
+    // Emit ha_connect
+    self.replset.emit("ha_connect", err, result, _server);
+
     if(self.state == HighAvailabilityProcess.STOPPED) {
       _server.close();
     }
@@ -268,11 +283,16 @@ var _reconnect_servers = function(self, reconnect_servers) {
             _reconnect_servers(self, reconnect_servers);  
           }, self.options.haInterval);                      
         }
+        
         var doc = _server.isMasterDoc;    
         // Fire error on any unknown callbacks for this server
         self.replset.__executeAllServerSpecificErrorCallbacks(_server.socketOptions.host, _server.socketOptions.port, err);    
 
         if(doc.ismaster) {
+          // Emit primary added
+          self.replset.emit('joined', "primary", doc, _server);
+
+          // If it was a secondary remove it
           if(state.secondaries[doc.me]) {
             delete state.secondaries[doc.me];
           }
@@ -280,13 +300,28 @@ var _reconnect_servers = function(self, reconnect_servers) {
           // Override any server in list of addresses
           state.addresses[doc.me] = _server;
           // Set server as master
-          state.master = _server;     
+          state.master = _server;
+
+          // If we have any buffered commands let's signal reconnect event
+          if(self.replset._commandsStore.count() > 0) {
+            self.replset.emit('reconnect');
+          }
+
           // Execute any waiting writes
           self.replset._commandsStore.execute_writes();   
         } else if(doc.secondary) {
+          // Emit secondary added
+          self.replset.emit('joined', "secondary", doc, _server);
+          // Add the secondary to the state
           state.secondaries[doc.me] = _server;
           // Override any server in list of addresses
           state.addresses[doc.me] = _server;
+
+          // If we have any buffered commands let's signal reconnect event
+          if(self.replset._commandsStore.count() > 0) {
+            self.replset.emit('reconnect');
+          }
+
           // Execute any waiting reads
           self.replset._commandsStore.execute_queries();   
         } else {

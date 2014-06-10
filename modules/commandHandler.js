@@ -7,7 +7,6 @@
  */
 
 var messages = require('./messages'),
-    playerManager = require('./playerManager'),
     database = require('./database'),
     expected = require('./expected');
 
@@ -21,7 +20,6 @@ var commands = {
      "west": require('./commands/west'),
       "who": require('./commands/who')
 };
-var expecting = {};
 
 /**
  * This function handles interpreting the user command and sending them to appropriate command module
@@ -45,7 +43,7 @@ function interpret(socket, command) {
  * @param command
  */
 exports.sent = function (socket, command) {
-    if (expected.isExpecting(socket)) {
+    if (expected.getExpecting(socket)) {
         expected.doExpected(socket, command);
     } else {
         interpret(socket, command);

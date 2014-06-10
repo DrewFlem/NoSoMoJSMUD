@@ -9,85 +9,67 @@
 var messages = require('./messages'),
     pMan = require('./playerManager'),
     mongojs = require('mongojs');
+    _ = require('underscore');
 
 var connections = {};
 
+/**
+ * Creates a new database connection for a certain user
+ *
+ * @param id
+ *      id of the new user (from socket)
+ */
 exports.newConnection = function (id) {
     var databaseUrl = "db";
     var collections = ["users"];
-    connections.id = mongojs.connect(databaseUrl, collections);
+    connections[id] = mongojs.connect(databaseUrl, collections);
 };
 
 exports.addNewPlayer = function (id, username, password) {
-    console.log("ADD NEW PLAYER TO DATABASE!!!");
+    connections[id].users.save({un: username, pw: password}, function (err, saved) {
+        if (err || !saved) console.log("ERROR: " + err);
+        else console.log("UN: " + saved.un + " PS: " + saved.pw + " saved. (id: " + saved._id + ")");
+    })
 };
 
+/**
+ * Deletes a player when needed.
+ *
+ * @param id
+ *      socket id
+ * @param username
+ *      string of username to delete from DB
+ */
 exports.deletePlayer = function (id, username) {
 
 };
 
-exports.checkPlayer = function(id, username) {
-    connections.id.users.find({name:username}, function(err, users) {
-        return !(err || !users.length);
+/**
+ * run a request on the server to see if the username is in the database already.
+ *
+ * @param id
+ * @param username
+ *      string of username to check on
+ * @param callback
+ */
+exports.checkPlayer = function(id, username, callback) {
+    connections[id].users.findOne({un:username}, function(err, user) {
+        callback("", user);
     });
 };
 
-exports.checkPassword = function(id, username, password) {
-
+/**
+ * Determines what to do with a command if the program is waiting for a response from the player
+ *
+ * @param id
+ * @param username
+ *      username to check password for
+ * @param password
+ *      password to test again username
+ * @param callback
+ */
+exports.checkPassword = function(id, username, password, callback) {
+    connections[id].users.findOne({un: username, pw: password}, function(err, user) {
+        callback("", user);
+    })
 };
-
-/*
-var dbAddress = 'mongodb://localhost/test';
-mongoose.connect(dbAddress);
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error: '));
-db.once('open', function callback () {
-    var playerSchema = mongoose.Schema({
-        name: String,
-        Age: Number
-    })
-
-    playerSchema.methods.speak = function () {
-        var greeting = this.name ? "My name is " + this.name : "I don't have a name.";
-        console.log(greeting);
-    }
-
-    var Player = mongoose.model('Player', playerSchema);
-
-    var playerOne = new Player({name: 'playerOne', age: 38});
-    var Andrew = new Player({name: 'Andrew', age: 30});
-    var Jennifer = new Player({name: 'Jennifer', age: 29});
-    var Nate = new Player({name: 'Nate', age: 5});
-    playerOne.speak();
-    Andrew.speak();
-    Jennifer.speak();
-    Nate.speak();
-
-    playerOne.save(function (err, playerOne) {
-        if (err) {
-            console.log("woops");
-        }
-    })
-    Andrew.save(function (err, Andrew) {
-        if (err) {
-            console.log("woops");
-        }
-    })
-    Jennifer.save(function (err, Jennifer) {
-        if (err) {
-            console.log("woops");
-        }
-    })
-    Nate.save(function (err, Nate) {
-        if (err) {
-            console.log("woops");
-        }
-    })
-
-    var foundAndrew = '';
-    Player.find( {name: 'Andrew'}, 'age', function (err, results) {
-        console.log(results);
-        foundAndrew = results;
-        console.log("hmm " + foundAndrew.name);
-    })
-});*/

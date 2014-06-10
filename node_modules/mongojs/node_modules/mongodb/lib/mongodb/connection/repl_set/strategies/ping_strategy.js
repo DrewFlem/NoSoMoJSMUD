@@ -201,6 +201,9 @@ PingStrategy.prototype._pingServer = function(callback) {
           var _ping = function(__db, __serverInstance) {
             // Execute ping on this connection
             __db.executeDbCommand({ping:1}, {failFast:true}, function(err) {
+              // Emit the ping
+              self.replicaset.emit("ping", err, serverInstance);
+
               if(err) {
                 delete self.dbs[__db.serverConfig.host + ":" + __db.serverConfig.port];
                 __db.close();
@@ -212,6 +215,9 @@ PingStrategy.prototype._pingServer = function(callback) {
               }
 
               __db.executeDbCommand({ismaster:1}, {failFast:true}, function(err, result) {
+                // Emit the ping
+                self.replicaset.emit("ping_ismaster", err, result, serverInstance);
+
                 if(err) {
                   delete self.dbs[__db.serverConfig.host + ":" + __db.serverConfig.port];
                   __db.close();
@@ -241,12 +247,12 @@ PingStrategy.prototype._pingServer = function(callback) {
             slaveOk: true,
             poolSize: 1,
             socketOptions: { connectTimeoutMS: connectTimeoutMS },
-            ssl: self.replicaset.ssl,
-            sslValidate: self.replicaset.sslValidate,
-            sslCA: self.replicaset.sslCA,
-            sslCert: self.replicaset.sslCert,
-            sslKey: self.replicaset.sslKey,
-            sslPass: self.replicaset.sslPass
+            ssl: self.replicaset.options.ssl,
+            sslValidate: self.replicaset.options.sslValidate,
+            sslCA: self.replicaset.options.sslCA,
+            sslCert: self.replicaset.options.sslCert,
+            sslKey: self.replicaset.options.sslKey,
+            sslPass: self.replicaset.options.sslPass
           });
 
           // Create Db instance        
@@ -261,7 +267,10 @@ PingStrategy.prototype._pingServer = function(callback) {
               return;
             }
 
-            __db.open(function(err, db) {              
+            __db.open(function(err, db) {  
+              // Emit ping connect
+              self.replicaset.emit("ping_connect", err, __serverInstance);
+
               if(self.state == 'disconnected' && __db != null) {
                 return __db.close();
               }
@@ -280,6 +289,8 @@ PingStrategy.prototype._pingServer = function(callback) {
 
               // Execute ping on this connection
               __db.executeDbCommand({ping:1}, {failFast:true}, function(err) {
+                self.replicaset.emit("ping", err, __serverInstance);
+                
                 if(err) {
                   delete self.dbs[__db.serverConfig.host + ":" + __db.serverConfig.port];
                   __db.close();
@@ -291,6 +302,8 @@ PingStrategy.prototype._pingServer = function(callback) {
                 }
 
                 __db.executeDbCommand({ismaster:1}, {failFast:true}, function(err, result) {
+                  self.replicaset.emit("ping_ismaster", err, result, __serverInstance);
+
                   if(err) {
                     delete self.dbs[__db.serverConfig.host + ":" + __db.serverConfig.port];
                     __db.close();
